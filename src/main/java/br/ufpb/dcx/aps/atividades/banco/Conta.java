@@ -2,7 +2,12 @@ package br.ufpb.dcx.aps.atividades.banco;
 
 import br.ufpb.dcx.aps.atividades.banco.Exceptions.ContaException;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Locale;
+
 
 public class Conta {
     public Correntista getCorrentista() {
@@ -15,6 +20,9 @@ public class Conta {
     private Banco banco;
     private double saldo;
     private static int idTransacao;
+
+
+
 
     public Conta(Correntista correntista, int numero, Banco banco){
         this.correntista = correntista;
@@ -58,14 +66,22 @@ public class Conta {
     }
 
     public String extrato (){
+
+        DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols();
+        otherSymbols.setDecimalSeparator(',');
+
+        DecimalFormat df = new DecimalFormat("0.00", otherSymbols);
+
         String textoTransa = "";
+
         for(Transacao transa:transacoes){
             String simboloDeposito = "";
             if(transa.getTipo().equals(Transacao.Tipo.DEBITO)){
                 simboloDeposito = "-";
             }
-            textoTransa+=transa.getTipo().getDescricao()+"\t"+simboloDeposito+"R$ "+String.format("%.2f",transa.getValor())+"\n";
+            textoTransa+=transa.getTipo().getDescricao()+"\t"+simboloDeposito+"R$ "+df.format(transa.getValor())+"\n";
         }
+
         return ">> "+ this.banco.getNome()+"\n"+
                 ">> Correntista: "+"\n"+
                 " CPF: "+this.correntista.getCpf()+"\n"+
@@ -75,7 +91,7 @@ public class Conta {
 
                 textoTransa+
                 "------------------------------------"+"\n"+
-                "SALDO:	R$ "+String.format("%.2f", this.saldo);
+                "SALDO:	R$ "+df.format(this.saldo);
 
     }
 
